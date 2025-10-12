@@ -95,6 +95,9 @@ class PaymentController extends Controller
         try {
             $order = $this->paypalService->createOrder($commande);
 
+            // Stocker l'ID de la commande en session pour le retrouver au retour
+            session(['paypal_commande_id' => $commande->id]);
+
             return response()->json([
                 'success' => true,
                 'order_id' => $order['id'],
@@ -154,14 +157,16 @@ class PaymentController extends Controller
     public function paypalSuccess(Request $request)
     {
         $orderId = $request->get('token');
+        $commandeId = session('paypal_commande_id');
         
-        if (!$orderId) {
+        if (!$orderId || !$commandeId) {
             return redirect()->route('panier.index')
-                ->with('error', 'Erreur lors du retour PayPal.');
+                ->with('error', 'Erreur lors du retour de PayPal, session invalide.');
         }
 
         return Inertia::render('Client/Payment/Success', [
             'order_id' => $orderId,
+            'commande_id' => $commandeId,
         ]);
     }
 
@@ -191,9 +196,7 @@ public function showStripePayment(Commande $commande)
             'paymentIntentId' => $paymentIntent->id,
         ]);
     } catch (\Exception $e) {
-        return redirect()->back()->withErrors([
-            'error' => 'Erreur lors de l\'initialisation du paiement: ' . $e->getMessage()
-        ]);
+        return redirect()->back()->with('error', 'Erreur lors de l\'initialisation du paiement: ' . $e->getMessage());
     }
 }
 

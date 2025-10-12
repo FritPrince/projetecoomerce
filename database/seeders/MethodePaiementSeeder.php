@@ -40,10 +40,15 @@ class MethodePaiementSeeder extends Seeder
             ],
         ];
 
-        foreach ($methodesPaiement as $methode) {
+        foreach ($methodesPaiement as $methodeData) {
             MethodePaiement::updateOrCreate(
-                ['nom' => $methode['nom']],
-                $methode
+                ['type' => $methodeData['nom']], // Utiliser 'type' pour la correspondance
+                [
+                    'type' => $methodeData['nom'], // Définir explicitement la colonne 'type'
+                    'details' => $methodeData['description'], // Utiliser 'details' au lieu de 'description'
+                    // 'actif' => $methodeData['actif'], // Supprimer la colonne 'actif'
+                    // 'config' => $methodeData['config'], // Supprimer la colonne 'config'
+                ]
             );
         }
     }

@@ -4,16 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Notification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class NotificationController extends Controller
 {
-    /**
-     * Afficher toutes les notifications de l'utilisateur
-     */
-    public function index(Request $request)
+    public function index()
     {
-        $user = $request->user();
+        $user = Auth::user();
         
         $notifications = $user->notifications()
             ->orderBy('created_at', 'desc')
@@ -25,80 +23,62 @@ class NotificationController extends Controller
         ]);
     }
 
-    /**
-     * Marquer une notification comme lue
-     */
     public function markAsRead(Request $request, Notification $notification)
     {
-        // Vérifier que la notification appartient à l'utilisateur
-        if ($notification->user_id !== $request->user()->id) {
-            abort(403);
-        }
+        $this->authorize('update', $notification);
 
-        $notification->markAsRead();
+        $notification->update([
+            'read' => true,
+            'read_at' => now(),
+        ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Notification marquée comme lue'
+            'unreadCount' => Auth::user()->unreadNotifications()->count(),
         ]);
     }
 
-    /**
-     * Marquer toutes les notifications comme lues
-     */
     public function markAllAsRead(Request $request)
     {
-        $request->user()->markAllNotificationsAsRead();
+        Auth::user()->markAllNotificationsAsRead();
 
         return response()->json([
             'success' => true,
-            'message' => 'Toutes les notifications ont été marquées comme lues'
+            'unreadCount' => 0,
         ]);
     }
 
-    /**
-     * Supprimer une notification
-     */
-    public function destroy(Request $request, Notification $notification)
+    public function destroy(Notification $notification)
     {
-        // Vérifier que la notification appartient à l'utilisateur
-        if ($notification->user_id !== $request->user()->id) {
-            abort(403);
-        }
+        $this->authorize('delete', $notification);
 
         $notification->delete();
 
         return response()->json([
             'success' => true,
-            'message' => 'Notification supprimée'
+            'unreadCount' => Auth::user()->unreadNotifications()->count(),
         ]);
     }
 
-    /**
-     * Obtenir le nombre de notifications non lues (API)
-     */
-    public function unreadCount(Request $request)
+    public function unreadCount()
     {
-        $count = $request->user()->unreadNotifications()->count();
+        $count = Auth::user()->unreadNotifications()->count();
 
         return response()->json([
-            'count' => $count
+            'count' => $count,
         ]);
     }
 
-    /**
-     * Obtenir les dernières notifications non lues (API)
-     */
-    public function recent(Request $request)
+    public function recent()
     {
-        $notifications = $request->user()
-            ->unreadNotifications()
+        $notifications = Auth::user()
+            ->notifications()
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get();
 
         return response()->json([
-            'notifications' => $notifications
+            'notifications' => $notifications,
         ]);
     }
 }

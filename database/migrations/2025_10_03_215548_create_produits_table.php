@@ -16,6 +16,7 @@ return new class extends Migration
             $table->integer('stock');
             $table->string('image')->nullable();
             $table->foreignId('sous_categorie_id')->constrained()->onDelete('cascade');
+            $table->decimal('note_moyenne', 2, 1)->nullable()->default(0.0);
             $table->timestamps();
         });
     }

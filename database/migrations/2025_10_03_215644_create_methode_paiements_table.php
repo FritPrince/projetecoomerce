@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('type');
             $table->text('details')->nullable();
-            $table->foreignId('paiement_id')->constrained()->onDelete('cascade');
+            $table->foreignId('paiement_id')->nullable()->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }

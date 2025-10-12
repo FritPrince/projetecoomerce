@@ -136,7 +136,7 @@ export default function PaymentMethods({ commande, stripeKey }: Props) {
                                             commande.produits.map((produit) => (
                                                 <div key={produit.id} className="flex justify-between text-sm">
                                                     <span>{produit.nom} x{produit.pivot.quantite}</span>
-                                                    <span>{parseFloat(produit.pivot.sous_total).toFixed(2)} €</span>
+                                                    <span>{Number(produit.pivot.sous_total).toFixed(2)} €</span>
                                                 </div>
                                             ))
                                         ) : (

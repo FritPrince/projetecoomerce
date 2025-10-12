@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
 
         // Exécuter les autres seeders
         $this->call([
+            TestDataSeeder::class,
             MethodePaiementSeeder::class,
             CategorieSeeder::class,
             ProduitSeeder::class,

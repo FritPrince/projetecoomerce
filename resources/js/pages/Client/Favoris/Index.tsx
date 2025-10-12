@@ -1,6 +1,7 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 import { Heart, ShoppingCart, Trash2, ArrowLeft, Star } from 'lucide-react';
+import { toast } from 'react-toastify';
 
 interface ProduitFavori {
     id: number;
@@ -25,18 +26,16 @@ interface FavorisProps {
     };
 }
 
-export default function Favoris({ favoris = [], flash }: FavorisProps) {
-    const [message, setMessage] = useState<{type: 'success' | 'error', text: string} | null>(null);
+export default function Favoris({ favoris, flash }: FavorisProps) {
+    // S'assurer que favorisList est toujours un tableau
+    const favorisList = Array.isArray(favoris) ? favoris : [];
 
     useEffect(() => {
         if (flash?.success) {
-            setMessage({ type: 'success', text: flash.success });
+            toast.success(flash.success);
         } else if (flash?.error) {
-            setMessage({ type: 'error', text: flash.error });
+            toast.error(flash.error);
         }
-        
-        const timer = setTimeout(() => setMessage(null), 5000);
-        return () => clearTimeout(timer);
     }, [flash]);
 
     const ajouterAuPanier = (produitId: number) => {
@@ -46,7 +45,10 @@ export default function Favoris({ favoris = [], flash }: FavorisProps) {
         }, {
             preserveScroll: true,
             onSuccess: () => {
-                setMessage({ type: 'success', text: 'Produit ajouté au panier' });
+                toast.success('Produit ajouté au panier');
+            },
+            onError: () => {
+                toast.error('Erreur lors de l\'ajout au panier');
             }
         });
     };
@@ -55,7 +57,10 @@ export default function Favoris({ favoris = [], flash }: FavorisProps) {
         router.delete(`/favoris/${favoriId}`, {
             preserveScroll: true,
             onSuccess: () => {
-                setMessage({ type: 'success', text: 'Produit retiré des favoris' });
+                toast.success('Produit retiré des favoris');
+            },
+            onError: () => {
+                toast.error('Erreur lors de la suppression');
             }
         });
     };
@@ -72,17 +77,8 @@ export default function Favoris({ favoris = [], flash }: FavorisProps) {
 
     return (
         <>
-            <Head title="Mes Favoris - ShopStyle" />
+            <Head title="Mes Favoris" />
             
-            {/* Message flash */}
-            {message && (
-                <div className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg ${
-                    message.type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
-                }`}>
-                    {message.text}
-                </div>
-            )}
-
             <div className="min-h-screen bg-gray-50 py-8">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     {/* Header */}
@@ -93,11 +89,11 @@ export default function Favoris({ favoris = [], flash }: FavorisProps) {
                         </Link>
                         <h1 className="text-2xl font-bold text-gray-900">Mes Favoris</h1>
                         <div className="text-sm text-gray-500">
-                            {favoris.length} produit(s)
+                            {favorisList.length} produit(s)
                         </div>
                     </div>
 
-                    {favoris.length === 0 ? (
+                    {favorisList.length === 0 ? (
                         <div className="bg-white rounded-lg shadow-sm p-12 text-center">
                             <Heart className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                             <h2 className="text-2xl font-bold text-gray-900 mb-4">Aucun favori</h2>
@@ -113,7 +109,7 @@ export default function Favoris({ favoris = [], flash }: FavorisProps) {
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                            {favoris.map((favori) => {
+                            {Array.isArray(favorisList) && favorisList.map((favori) => {
                                 const noteMoyenne = getNoteMoyenne(favori.produit.note_moyenne);
                                 const noteFormatee = formatNote(favori.produit.note_moyenne);
                                 

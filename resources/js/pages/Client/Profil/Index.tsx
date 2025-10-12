@@ -15,11 +15,6 @@ interface ProfilIndexProps {
 }
 
 export default function ProfilIndex({ user }: ProfilIndexProps) {
-    const deconnexion = () => {
-        // Logique de déconnexion
-        console.log('Déconnexion');
-    };
-
     return (
         <>
             <Head title="Mon Profil" />
@@ -90,7 +85,7 @@ export default function ProfilIndex({ user }: ProfilIndexProps) {
                                 
                                 <div className="mt-6">
                                     <Link 
-                                        href="/profil/edit"
+                                        href="/profile"
                                         className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
                                     >
                                         Modifier mes informations
@@ -110,7 +105,7 @@ export default function ProfilIndex({ user }: ProfilIndexProps) {
                                 </p>
                                 
                                 <Link 
-                                    href="/profil/changer-mot-de-passe"
+                                    href="/password/edit"
                                     className="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors"
                                 >
                                     Changer mon mot de passe
@@ -137,13 +132,15 @@ export default function ProfilIndex({ user }: ProfilIndexProps) {
 
                             {/* Déconnexion */}
                             <div className="bg-white rounded-lg shadow-sm p-6">
-                                <button
-                                    onClick={deconnexion}
+                                <Link
+                                    href="/logout"
+                                    method="post"
+                                    as="button"
                                     className="w-full flex items-center justify-center text-red-600 hover:text-red-800 p-3 border border-red-200 rounded-lg hover:border-red-300 transition-colors"
                                 >
                                     <LogOut className="h-4 w-4 mr-2" />
                                     Se déconnecter
-                                </button>
+                                </Link>
                             </div>
                         </div>
                     </div>

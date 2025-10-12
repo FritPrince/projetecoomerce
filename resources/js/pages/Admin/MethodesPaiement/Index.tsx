@@ -37,7 +37,7 @@ interface MethodePaiement {
     paiement_id: number;
     created_at: string;
     updated_at: string;
-    paiement: Paiement;
+    paiement: Paiement | null;
 }
 
 interface MethodesPaiementIndexProps {
@@ -95,14 +95,16 @@ export default function MethodesPaiementIndex({ methodesPaiement }: MethodesPaie
                                             <div className="flex items-center space-x-2 mb-1">
                                                 {getTypeBadge(methode.type)}
                                                 <span className="text-sm text-muted-foreground">
-                                                    Paiement: {methode.paiement.reference}
+                                                    {methode.paiement ? `Paiement: ${methode.paiement.reference}` : 'Aucun paiement associé'}
                                                 </span>
                                             </div>
                                             <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                                                <div className="flex items-center space-x-1">
-                                                    <User className="h-3 w-3" />
-                                                    <span>{methode.paiement.user.name}</span>
-                                                </div>
+                                                {methode.paiement && (
+                                                    <div className="flex items-center space-x-1">
+                                                        <User className="h-3 w-3" />
+                                                        <span>{methode.paiement.user.name}</span>
+                                                    </div>
+                                                )}
                                                 <div className="flex items-center space-x-1">
                                                     <Calendar className="h-3 w-3" />
                                                     <span>{new Date(methode.created_at).toLocaleDateString()}</span>

@@ -79,7 +79,7 @@ class PanierController extends Controller
 
         $this->recalculerTotalPanier($panier);
 
-        return redirect()->back()->with('success', 'Produit ajouté au panier');
+        return redirect()->back()->with('success', 'Produit ajouté au panier avec succès.');
     }
 
     public function mettreAJour(Request $request, Commande $commande)

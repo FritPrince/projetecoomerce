@@ -1,175 +1,223 @@
-import { Head, Link } from '@inertiajs/react';
-import { Trash2, Plus, Minus, ShoppingBag } from 'lucide-react';
+import ClientLayout from '@/layouts/ClientLayout';
+import { Head, Link, router } from '@inertiajs/react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Package, Eye, X, Calendar, Euro, Truck, CheckCircle, Clock, AlertCircle } from 'lucide-react';
 
-interface ArticlePanier {
+interface Produit {
     id: number;
-    produit_id: number;
-    quantite: number;
-    produit: {
-        id: number;
+    nom: string;
+    prix: number;
+    image?: string;
+    sous_categorie: {
         nom: string;
-        prix: number;
-        image?: string;
-        stock: number;
+        categorie: {
+            nom: string;
+        };
     };
 }
 
-interface CommandesIndexProps {
-    panier: ArticlePanier[];
+interface LigneCommande {
+    id: number;
+    quantite: number;
+    prix_unitaire: number;
+    sous_total: number;
+    produit: Produit;
 }
 
-export default function CommandesIndex({ panier }: CommandesIndexProps) {
-    const sousTotal = panier.reduce((total, article) => total + (article.produit.prix * article.quantite), 0);
-    const fraisLivraison = sousTotal > 50 ? 0 : 4.99;
-    const total = sousTotal + fraisLivraison;
+interface Commande {
+    id: number;
+    numero_commande: string;
+    date_commande: string;
+    statut: string;
+    total: number;
+    ligne_commandes: LigneCommande[];
+    created_at: string;
+    updated_at: string;
+}
 
-    const mettreAJourQuantite = (articleId: number, nouvelleQuantite: number) => {
-        // Logique de mise à jour de la quantité
-        console.log('Mettre à jour quantité:', articleId, nouvelleQuantite);
+interface CommandesProps {
+    commandes: {
+        data: Commande[];
+        links: any[];
+        meta: any;
+    };
+}
+
+const getStatutBadge = (statut: string) => {
+    const statutConfig = {
+        'en_attente': { variant: 'secondary' as const, label: 'En attente', icon: Clock },
+        'confirmee': { variant: 'default' as const, label: 'Confirmée', icon: CheckCircle },
+        'expediee': { variant: 'default' as const, label: 'Expédiée', icon: Truck },
+        'livree': { variant: 'default' as const, label: 'Livrée', icon: CheckCircle },
+        'annulee': { variant: 'destructive' as const, label: 'Annulée', icon: X },
+    };
+    
+    const config = statutConfig[statut as keyof typeof statutConfig] || { 
+        variant: 'secondary' as const, 
+        label: statut, 
+        icon: AlertCircle 
+    };
+    
+    return (
+        <Badge variant={config.variant} className="flex items-center gap-1">
+            <config.icon className="h-3 w-3" />
+            {config.label}
+        </Badge>
+    );
+};
+
+const canCancel = (statut: string) => {
+    return ['en_attente', 'confirmee'].includes(statut);
+};
+
+export default function CommandesIndex({ commandes }: CommandesProps) {
+    const annulerCommande = (commandeId: number) => {
+        if (confirm('Êtes-vous sûr de vouloir annuler cette commande ?')) {
+            router.post(`/mes-commandes/${commandeId}/cancel`, {}, {
+                onSuccess: () => {
+                    // La page sera rechargée automatiquement
+                }
+            });
+        }
     };
 
-    const supprimerArticle = (articleId: number) => {
-        // Logique de suppression d'article
-        console.log('Supprimer article:', articleId);
-    };
-
-    const procederAuPaiement = () => {
-        // Logique de redirection vers le paiement
-        console.log('Procéder au paiement');
+    const formatDate = (dateString: string) => {
+        return new Date(dateString).toLocaleDateString('fr-FR', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
     };
 
     return (
-        <>
-            <Head title="Mon Panier" />
-            
-            {/* Header identique */}
-            <header className="bg-white shadow-sm sticky top-0 z-50">
-                {/* Même header que les autres pages */}
-            </header>
+        <ClientLayout>
+            <Head title="Mes Commandes" />
+            <div className="min-h-screen bg-gray-50 py-8">
+                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                    {/* Header */}
+                    <div className="mb-8">
+                        <h1 className="text-3xl font-bold text-gray-900">Mes Commandes</h1>
+                        <p className="mt-2 text-gray-600">
+                            Consultez l'historique de vos commandes et suivez leur statut
+                        </p>
+                    </div>
 
-            <main className="min-h-screen bg-gray-50 py-8">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-8">Mon Panier</h1>
-
-                    {panier.length > 0 ? (
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                            {/* Articles du panier */}
-                            <div className="lg:col-span-2 space-y-4">
-                                {panier.map((article) => (
-                                    <div key={article.id} className="bg-white rounded-lg shadow-sm p-6">
-                                        <div className="flex items-center space-x-4">
-                                            {article.produit.image && (
-                                                <img 
-                                                    src={`/storage/${article.produit.image}`}
-                                                    alt={article.produit.nom}
-                                                    className="w-20 h-20 object-cover rounded-lg"
-                                                />
-                                            )}
-                                            <div className="flex-1">
-                                                <h3 className="font-semibold text-gray-900 mb-1">
-                                                    {article.produit.nom}
-                                                </h3>
-                                                <p className="text-lg font-bold text-primary mb-2">
-                                                    {article.produit.prix} €
-                                                </p>
-                                                <div className="flex items-center space-x-4">
-                                                    <div className="flex items-center border border-gray-300 rounded-lg">
-                                                        <button
-                                                            onClick={() => mettreAJourQuantite(article.id, article.quantite - 1)}
-                                                            disabled={article.quantite <= 1}
-                                                            className="p-2 hover:bg-gray-100 disabled:opacity-50"
-                                                        >
-                                                            <Minus className="h-4 w-4" />
-                                                        </button>
-                                                        <span className="px-4 py-2">{article.quantite}</span>
-                                                        <button
-                                                            onClick={() => mettreAJourQuantite(article.id, article.quantite + 1)}
-                                                            disabled={article.quantite >= article.produit.stock}
-                                                            className="p-2 hover:bg-gray-100 disabled:opacity-50"
-                                                        >
-                                                            <Plus className="h-4 w-4" />
-                                                        </button>
+                    {commandes.data.length === 0 ? (
+                        <Card>
+                            <CardContent className="text-center py-12">
+                                <Package className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                                <h3 className="text-lg font-semibold text-gray-900 mb-2">Aucune commande</h3>
+                                <p className="text-gray-500 mb-6">
+                                    Vous n'avez encore passé aucune commande.
+                                </p>
+                                <Button asChild>
+                                    <Link href="/">
+                                        Découvrir nos produits
+                                    </Link>
+                                </Button>
+                            </CardContent>
+                        </Card>
+                    ) : (
+                        <div className="space-y-6">
+                            {commandes.data.map((commande) => (
+                                <Card key={commande.id}>
+                                    <CardHeader>
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <CardTitle className="flex items-center gap-2">
+                                                    <Package className="h-5 w-5" />
+                                                    Commande {commande.numero_commande}
+                                                </CardTitle>
+                                                <CardDescription>
+                                                    Passée le {formatDate(commande.date_commande)}
+                                                </CardDescription>
+                                            </div>
+                                            <div className="flex items-center gap-3">
+                                                {getStatutBadge(commande.statut)}
+                                                <div className="text-right">
+                                                <div className="text-lg font-semibold text-primary">
+                                                    {Number(commande.total).toFixed(2)} €
+                                                </div>
+                                                    <div className="text-sm text-gray-500">
+                                                        {commande.ligne_commandes.length} article(s)
                                                     </div>
-                                                    <button
-                                                        onClick={() => supprimerArticle(article.id)}
-                                                        className="text-red-600 hover:text-red-800 p-2"
-                                                    >
-                                                        <Trash2 className="h-4 w-4" />
-                                                    </button>
                                                 </div>
                                             </div>
-                                            <div className="text-right">
-                                                <p className="text-lg font-bold">
-                                                    {(article.produit.prix * article.quantite).toFixed(2)} €
-                                                </p>
+                                        </div>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="space-y-4">
+                                            {/* Produits de la commande */}
+                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                {commande.ligne_commandes.map((ligne) => (
+                                                    <div key={ligne.id} className="flex items-center space-x-3 p-3 border rounded-lg">
+                                                        <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                                                            {ligne.produit.image ? (
+                                                                <img 
+                                                                    src={`/storage/${ligne.produit.image}`}
+                                                                    alt={ligne.produit.nom}
+                                                                    className="w-full h-full object-cover rounded-lg"
+                                                                />
+                                                            ) : (
+                                                                <Package className="h-6 w-6 text-gray-400" />
+                                                            )}
+                                                        </div>
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="text-sm font-medium text-gray-900 truncate">
+                                                                {ligne.produit.nom}
+                                                            </p>
+                                                            <p className="text-xs text-gray-500">
+                                                                {ligne.produit.sous_categorie.categorie.nom} • {ligne.produit.sous_categorie.nom}
+                                                            </p>
+                                                            <p className="text-sm text-gray-600">
+                                                                {ligne.quantite} × {Number(ligne.prix_unitaire).toFixed(2)} €
+                                                            </p>
+                                                        </div>
+                                                        <div className="text-sm font-medium text-gray-900">
+                                                            {Number(ligne.sous_total).toFixed(2)} €
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                            {/* Actions */}
+                                            <div className="flex items-center justify-between pt-4 border-t">
+                                                <div className="flex items-center gap-2 text-sm text-gray-500">
+                                                    <Calendar className="h-4 w-4" />
+                                                    <span>Commande passée le {formatDate(commande.created_at)}</span>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <Button variant="outline" size="sm" asChild>
+                                                        <Link href={`/mes-commandes/${commande.id}`}>
+                                                            <Eye className="h-4 w-4 mr-2" />
+                                                            Voir les détails
+                                                        </Link>
+                                                    </Button>
+                                                    {canCancel(commande.statut) && (
+                                                        <Button 
+                                                            variant="outline" 
+                                                            size="sm"
+                                                            onClick={() => annulerCommande(commande.id)}
+                                                            className="text-red-600 hover:text-red-700 hover:border-red-500"
+                                                        >
+                                                            <X className="h-4 w-4 mr-2" />
+                                                            Annuler
+                                                        </Button>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
-                            </div>
-
-                            {/* Récapitulatif */}
-                            <div className="bg-white rounded-lg shadow-sm p-6 h-fit sticky top-24">
-                                <h2 className="text-xl font-bold mb-4">Récapitulatif</h2>
-                                
-                                <div className="space-y-3 mb-6">
-                                    <div className="flex justify-between">
-                                        <span>Sous-total</span>
-                                        <span>{sousTotal.toFixed(2)} €</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span>Livraison</span>
-                                        <span>{fraisLivraison === 0 ? 'Gratuite' : `${fraisLivraison} €`}</span>
-                                    </div>
-                                    {fraisLivraison > 0 && sousTotal < 50 && (
-                                        <p className="text-sm text-green-600">
-                                            Plus que {(50 - sousTotal).toFixed(2)} € pour la livraison gratuite !
-                                        </p>
-                                    )}
-                                    <div className="border-t pt-3">
-                                        <div className="flex justify-between font-bold text-lg">
-                                            <span>Total</span>
-                                            <span>{total.toFixed(2)} €</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <button
-                                    onClick={procederAuPaiement}
-                                    className="w-full bg-primary text-white py-3 px-6 rounded-lg hover:bg-primary/90 transition-colors font-semibold"
-                                >
-                                    Procéder au paiement
-                                </button>
-
-                                <div className="mt-4 text-center">
-                                    <Link href="/" className="text-primary hover:underline">
-                                        Continuer mes achats
-                                    </Link>
-                                </div>
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-                            <ShoppingBag className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                            <h2 className="text-2xl font-bold text-gray-900 mb-2">Votre panier est vide</h2>
-                            <p className="text-gray-600 mb-6">
-                                Découvrez nos produits et ajoutez-les à votre panier.
-                            </p>
-                            <Link 
-                                href="/"
-                                className="bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors"
-                            >
-                                Découvrir les produits
-                            </Link>
+                                    </CardContent>
+                                </Card>
+                            ))}
                         </div>
                     )}
                 </div>
-            </main>
-
-            {/* Footer identique */}
-            <footer className="bg-gray-900 text-white py-12">
-                {/* Même footer */}
-            </footer>
-        </>
+            </div>
+        </ClientLayout>
     );
 }
