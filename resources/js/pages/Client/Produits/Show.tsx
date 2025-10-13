@@ -1,6 +1,7 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { useState } from 'react';
 import { Star, Heart, ShoppingCart, ArrowLeft, Check } from 'lucide-react';
+import { route } from '@/lib/route';
 
 interface Produit {
     id: number;
@@ -31,9 +32,20 @@ export default function ProduitShow({ produit, avis }: ProduitShowProps) {
     const [quantite, setQuantite] = useState(1);
     const [imageActive, setImageActive] = useState(0);
 
+    const { post, processing } = useForm({
+        produit_id: produit.id,
+        quantite: quantite,
+    });
+
     const ajouterAuPanier = () => {
-        // Logique d'ajout au panier
-        console.log('Ajouter au panier:', produit.id, quantite);
+        post(route('panier.ajouter'), {
+            onSuccess: () => {
+                // No need for toast here, it's handled by app.tsx
+            },
+            onError: (errors) => {
+                console.error('Erreur lors de l\'ajout au panier:', errors);
+            },
+        });
     };
 
     const ajouterAuxFavoris = () => {
@@ -41,7 +53,7 @@ export default function ProduitShow({ produit, avis }: ProduitShowProps) {
         console.log('Ajouter aux favoris:', produit.id);
     };
 
-    const images = produit.image ? [produit.image] : [];
+    const images = produit.image_url ? [produit.image_url] : [];
 
     return (
         <>
@@ -64,7 +76,7 @@ export default function ProduitShow({ produit, avis }: ProduitShowProps) {
                             <Link href="/favoris" className="text-gray-700 hover:text-primary font-medium">
                                 Mes Favoris
                             </Link>
-                            <Link href="/profil" className="text-gray-700 hover:text-primary font-medium">
+                            <Link href={route('profil.index')} className="text-gray-700 hover:text-primary font-medium">
                                 Mon Profil
                             </Link>
                         </nav>
@@ -204,11 +216,11 @@ export default function ProduitShow({ produit, avis }: ProduitShowProps) {
                                     <div className="flex space-x-4">
                                         <button
                                             onClick={ajouterAuPanier}
-                                            disabled={produit.stock === 0}
+                                            disabled={produit.stock === 0 || processing}
                                             className="flex-1 bg-primary text-white py-3 px-6 rounded-lg hover:bg-primary/90 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
                                         >
                                             <ShoppingCart className="h-5 w-5 mr-2" />
-                                            Ajouter au panier
+                                            {processing ? 'Ajout en cours...' : 'Ajouter au panier'}
                                         </button>
                                         <button
                                             onClick={ajouterAuxFavoris}

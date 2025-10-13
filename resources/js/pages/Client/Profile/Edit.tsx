@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { type SharedData, type User } from '@/types';
 import { Head, useForm, usePage } from '@inertiajs/react';
 import { route } from '@/lib/route';
+import { toast } from 'react-toastify';
 
 export default function EditProfile() {
     const { auth } = usePage<SharedData>().props;
@@ -23,6 +24,7 @@ export default function EditProfile() {
         patch(route('profile.update'), {
             onSuccess: () => {
                 reset();
+                toast.success('Profil mis à jour avec succès !');
             },
         });
     };

@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Key, ArrowLeft } from 'lucide-react';
 import { Link } from '@inertiajs/react';
+import { route } from '@/lib/route';
 
 export default function PasswordChange() {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -28,7 +29,7 @@ export default function PasswordChange() {
                 <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
                     {/* Header */}
                     <div className="mb-8">
-                        <Link href="/profile" className="flex items-center text-gray-600 hover:text-primary mb-4">
+                        <Link href={route('profile.show')} className="flex items-center text-gray-600 hover:text-primary mb-4">
                             <ArrowLeft className="h-5 w-5 mr-2" />
                             Retour au profil
                         </Link>
@@ -100,7 +101,7 @@ export default function PasswordChange() {
                                         {processing ? 'Mise à jour...' : 'Mettre à jour le mot de passe'}
                                     </Button>
                                     <Button type="button" variant="outline" asChild>
-                                        <Link href="/profile">Annuler</Link>
+                                        <Link href={route('profile.show')}>Annuler</Link>
                                     </Button>
                                 </div>
                             </form>

@@ -11,6 +11,7 @@ use App\Models\LigneCommande;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AccueilController extends Controller
 {
@@ -24,6 +25,8 @@ class AccueilController extends Controller
         }])->get();
 
         $produits = Produit::with(['sousCategorie.categorie'])
+            ->select('produits.*') // Select all existing columns
+            ->addSelect(DB::raw('produits.image as image_url')) // Explicitly add image_url
             ->where('stock', '>', 0)
             ->orderBy('created_at', 'desc')
             ->get();

@@ -91,7 +91,7 @@ class TestDataSeeder extends Seeder
                 'prix' => 1199.99,
                 'stock' => 50,
                 'sous_categorie_id' => $sousCategorie1->id,
-                'image' => 'https://via.placeholder.com/300x300?text=iPhone+15+Pro',
+                'image' => 'https://placehold.co/600x400?text=produit',
             ],
             [
                 'nom' => 'MacBook Air M2',

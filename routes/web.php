@@ -73,8 +73,8 @@ Route::middleware(['auth'])->group(function () {
     
     // Dashboard et profil (accessibles à tous les utilisateurs connectés)
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/profile', [UserController::class, 'profile'])->name('profile.edit');
-    Route::patch('/profile', [UserController::class, 'updateProfile'])->name('profile.update');
+    Route::get('/profile', [UserController::class, 'profile'])->name('profile.edit-user');
+    Route::patch('/profile', [UserController::class, 'updateProfile'])->name('profile.update-user');
     
     // Édition de profil
     Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
@@ -91,11 +91,11 @@ Route::middleware(['auth'])->group(function () {
     // ==================== ROUTES CLIENT ====================
     Route::middleware(['role:client'])->group(function () {
         // Profil client
-        Route::get('/profile', [App\Http\Controllers\Client\ProfileController::class, 'show'])->name('profile.show');
-        Route::get('/profile/edit', [App\Http\Controllers\Client\ProfileController::class, 'edit'])->name('profile.edit');
-        Route::put('/profile', [App\Http\Controllers\Client\ProfileController::class, 'update'])->name('profile.update');
-        Route::get('/profile/password', [App\Http\Controllers\Client\ProfileController::class, 'edit'])->name('profile.password');
-        Route::put('/profile/password', [App\Http\Controllers\Client\ProfileController::class, 'updatePassword'])->name('profile.password.update');
+        Route::get('/client/profile', [App\Http\Controllers\Client\ProfileController::class, 'show'])->name('profile.show');
+        Route::get('/client/profile/edit', [App\Http\Controllers\Client\ProfileController::class, 'edit'])->name('profile.edit');
+        Route::match(['put', 'patch'], '/client/profile', [App\Http\Controllers\Client\ProfileController::class, 'update'])->name('profile.update');
+        Route::get('/client/profile/password', [App\Http\Controllers\Client\ProfileController::class, 'edit'])->name('profile.password');
+        Route::put('/client/profile/password', [App\Http\Controllers\Client\ProfileController::class, 'updatePassword'])->name('profile.password.update');
         
         // Commandes client
         Route::get('/mes-commandes', [App\Http\Controllers\Client\CommandeController::class, 'index'])->name('client.commandes.index');
@@ -125,7 +125,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/api/compare/count', [App\Http\Controllers\CompareController::class, 'getCount'])->name('compare.count');
         
         // Profil client
-        Route::get('/profil', [AccueilController::class, 'profil'])->name('profil.index');
+        Route::get('/client/profil', [AccueilController::class, 'profil'])->name('profil.index');
         
         // Commandes client (historique)
         Route::get('/commandes', [AccueilController::class, 'commandes'])->name('commandes.index');

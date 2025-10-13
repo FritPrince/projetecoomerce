@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { User, Mail, Phone, MapPin, Edit, Key, ShoppingBag, Heart, CreditCard } from 'lucide-react';
+import { route } from '@/lib/route';
 
 interface User {
     id: number;
@@ -99,13 +100,13 @@ export default function ProfileShow({ user }: ProfileShowProps) {
                                 </CardHeader>
                                 <CardContent className="space-y-3">
                                     <Button asChild className="w-full justify-start">
-                                        <Link href="/profile/edit">
+                                        <Link href={route('profile.edit')}>
                                             <Edit className="h-4 w-4 mr-2" />
                                             Modifier le profil
                                         </Link>
                                     </Button>
                                     <Button asChild variant="outline" className="w-full justify-start">
-                                        <Link href="/profile/password">
+                                        <Link href={route('profile.password')}>
                                             <Key className="h-4 w-4 mr-2" />
                                             Changer le mot de passe
                                         </Link>

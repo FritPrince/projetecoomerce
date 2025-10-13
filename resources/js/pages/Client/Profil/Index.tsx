@@ -1,5 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
 import { User, Mail, Phone, MapPin, Lock, LogOut } from 'lucide-react';
+import { route } from '@/lib/route';
 
 interface User {
     id: number;
@@ -85,7 +86,7 @@ export default function ProfilIndex({ user }: ProfilIndexProps) {
                                 
                                 <div className="mt-6">
                                     <Link 
-                                        href="/profile"
+                                        href={route('profile.edit')}
                                         className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
                                     >
                                         Modifier mes informations
@@ -105,7 +106,7 @@ export default function ProfilIndex({ user }: ProfilIndexProps) {
                                 </p>
                                 
                                 <Link 
-                                    href="/password/edit"
+                                    href={route('password.edit')}
                                     className="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors"
                                 >
                                     Changer mon mot de passe

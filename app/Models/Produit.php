@@ -11,6 +11,8 @@ class Produit extends Model
 
     protected $fillable = ['nom', 'description', 'prix', 'stock', 'image', 'sous_categorie_id'];
 
+    protected $appends = ['image_url'];
+
     protected $casts = [
         'prix' => 'decimal:2',
         'note_moyenne' => 'float',
@@ -56,9 +58,29 @@ class Produit extends Model
     public function getImageUrlAttribute()
     {
         if ($this->image) {
+            // Check if the image is already a full URL
+            if (filter_var($this->image, FILTER_VALIDATE_URL)) {
+                return $this->image;
+            }
+
+            // If it's a relative path that starts with 'produits/', assume it's a local file.
+            // This handles cases where the 'image' column might contain 'produits/image.jpg'
+            // without the 'storage/' prefix.
+            if (str_starts_with($this->image, 'produits/')) {
+                return asset('storage/' . $this->image);
+            }
+
+            // If it's a path that already contains 'storage/', it means it was incorrectly saved with the prefix.
+            // In this case, we should remove the 'storage/' prefix before passing it to asset().
+            if (str_starts_with($this->image, 'storage/')) {
+                return asset(str_replace('storage/', '', $this->image));
+            }
+
+            // As a fallback, assume it's a local file path that needs 'storage/' prepended.
+            // This covers cases like 'image.jpg' directly in the public storage.
             return asset('storage/' . $this->image);
         }
-        return 'https://via.placeholder.com/300x400?text=Produit';
+        return 'https://placehold.co/600x400?text=produit';
     }
 
     // Scope pour les produits en stock

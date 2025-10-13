@@ -71,7 +71,7 @@ export default function ProduitsIndex({ produits }: ProduitsIndexProps) {
                             <CardContent className="p-0">
                                 {produit.image ? (
                                     <img 
-                                        src={`/storage/${produit.image}`}
+                                        src={produit.image_url}
                                         alt={produit.nom}
                                         className="w-full h-48 object-cover rounded-t-lg"
                                     />

@@ -25,6 +25,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
     }
   };
 
+
+
   const imageVariants = {
     hover: {
       scale: 1.1,
@@ -52,6 +54,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
       transition: { duration: 0.3 }
     }
   };
+
+  console.log(produit);
 
   // Ensure prix is a number before calling toFixed
   const formattedPrix = typeof produit.prix === 'number' ? produit.prix.toFixed(2) : parseFloat(produit.prix).toFixed(2);
@@ -87,7 +91,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       {/* Image du produit */}
       <div className="product-image-container">
         <motion.img 
-          src={produit.image || 'https://via.placeholder.com/300x400?text=Produit'} 
+          src={produit.image_url || 'https://placehold.co/600x400?text=produit'} 
           alt={produit.nom}
           variants={imageVariants}
           className="product-image"

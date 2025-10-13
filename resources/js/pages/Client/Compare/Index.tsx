@@ -95,9 +95,8 @@ export default function Compare({ produits, productIds, message }: CompareProps)
                                 {produits.map((produit) => (
                                     <div key={produit.id} className="text-center">
                                         <div className="aspect-square bg-gray-100 rounded-lg mb-4 overflow-hidden">
-                                            {produit.image ? (
-                                                <img
-                                                    src={`/storage/${produit.image}`}
+                                            {produit.image_url ? (
+                                                    src={produit.image_url}
                                                     alt={produit.nom}
                                                     className="w-full h-full object-cover"
                                                 />

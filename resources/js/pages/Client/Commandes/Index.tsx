@@ -10,6 +10,7 @@ interface Produit {
     nom: string;
     prix: number;
     image?: string;
+    image_url?: string;
     sous_categorie: {
         nom: string;
         categorie: {
@@ -156,14 +157,16 @@ export default function CommandesIndex({ commandes }: CommandesProps) {
                                                 {commande.ligne_commandes.map((ligne) => (
                                                     <div key={ligne.id} className="flex items-center space-x-3 p-3 border rounded-lg">
                                                         <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                                                            {ligne.produit.image ? (
-                                                                <img 
-                                                                    src={`/storage/${ligne.produit.image}`}
-                                                                    alt={ligne.produit.nom}
-                                                                    className="w-full h-full object-cover rounded-lg"
-                                                                />
+                                                            {ligne.produit.image_url ? (
+                                                                    <img
+                                                                        src={ligne.produit.image_url}
+                                                                        alt={ligne.produit.nom}
+                                                                        className="w-16 h-16 object-cover rounded"
+                                                                    />
                                                             ) : (
-                                                                <Package className="h-6 w-6 text-gray-400" />
+                                                                    <div className="flex-shrink-0 w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                                                                        <Package className="h-8 w-8 text-gray-400" />
+                                                                    </div>
                                                             )}
                                                         </div>
                                                         <div className="flex-1 min-w-0">

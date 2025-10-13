@@ -66,7 +66,7 @@ export default function ProduitsEdit({ produit, sousCategories }: ProduitsEditPr
     });
 
     const [imagePreview, setImagePreview] = useState<string | null>(
-        produit.image ? `/storage/${produit.image}` : null
+        produit.image_url ? produit.image_url : null
     );
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -211,7 +211,7 @@ export default function ProduitsEdit({ produit, sousCategories }: ProduitsEditPr
                                         {errors.image && (
                                             <p className="text-sm text-red-600">{errors.image}</p>
                                         )}
-                                        {produit.image && !imagePreview?.startsWith('blob:') && (
+                                        {produit.image_urm && !imagePreview?.startsWith('blob:') && (
                                             <p className="text-sm text-muted-foreground mt-1">
                                                 Image actuelle: {produit.image}
                                             </p>

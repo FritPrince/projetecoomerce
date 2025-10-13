@@ -101,9 +101,8 @@ export default function ProduitsShow({ produit }: ProduitsShowProps) {
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 <div className="flex items-start space-x-6">
-                                    {produit.image ? (
-                                        <img 
-                                            src={`/storage/${produit.image}`}
+                                    {produit.image_url ? (
+                                            src={produit.image_url}
                                             alt={produit.nom}
                                             className="w-32 h-32 object-cover rounded-lg"
                                         />

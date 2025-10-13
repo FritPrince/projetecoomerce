@@ -1,6 +1,7 @@
 import { useForm, Head, usePage, router } from '@inertiajs/react';
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Transition } from '@headlessui/react';
+import { route } from '@/lib/route';
 
 import DeleteUser from '@/components/delete-user';
 import HeadingSmall from '@/components/heading-small';
@@ -14,7 +15,7 @@ import SettingsLayout from '@/layouts/settings/layout';
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Profile settings',
-        href: '/profile',
+        href: route('profile.edit-user'),
     },
 ];
 
@@ -34,7 +35,7 @@ export default function Profile({
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        router.put('/profile', data);
+        router.patch(route('profile.update-user'), data);
     };
 
     return (

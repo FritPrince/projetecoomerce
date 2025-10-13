@@ -1,6 +1,6 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
-import { Heart, ShoppingCart, Trash2, ArrowLeft, Star } from 'lucide-react';
+import { Heart, ShoppingCart, Trash2, ArrowLeft, Star, Package } from 'lucide-react';
 import { toast } from 'react-toastify';
 
 interface ProduitFavori {
@@ -117,16 +117,16 @@ export default function Favoris({ favoris, flash }: FavorisProps) {
                                     <div key={favori.id} className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
                                         <Link href={`/produits/${favori.produit.id}`}>
                                             <div className="aspect-square overflow-hidden rounded-t-lg">
-                                                {favori.produit.image ? (
-                                                    <img 
-                                                        src={`/storage/${favori.produit.image}`}
-                                                        alt={favori.produit.nom}
-                                                        className="w-full h-full object-cover hover:scale-105 transition-transform"
-                                                    />
+                                                {favori.produit.image_url ? (
+                                                        <img
+                                                            src={favori.produit.image_url}
+                                                            alt={favori.produit.nom}
+                                                            className="w-16 h-16 object-cover rounded"
+                                                        />
                                                 ) : (
-                                                    <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                                                        <span className="text-gray-400">Image non disponible</span>
-                                                    </div>
+                                                        <div className="w-16 h-16 bg-muted flex items-center justify-center rounded">
+                                                            <Package className="h-8 w-8 text-muted-foreground" />
+                                                        </div>
                                                 )}
                                             </div>
                                         </Link>

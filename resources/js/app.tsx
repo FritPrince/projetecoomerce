@@ -19,6 +19,15 @@ createInertiaApp({
     setup({ el, App, props }) {
         const root = createRoot(el);
 
+        if (props.flash && props.flash.success) {
+            console.log('Flash success message:', props.flash.success);
+            toast.success(props.flash.success);
+        }
+        if (props.flash && props.flash.error) {
+            console.log('Flash error message:', props.flash.error);
+            toast.error(props.flash.error);
+        }
+
         root.render(
             <>
                 <App {...props} />

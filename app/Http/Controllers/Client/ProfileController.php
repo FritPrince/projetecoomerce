@@ -61,7 +61,7 @@ class ProfileController extends Controller
             'adresse' => $request->adresse,
         ]);
 
-        return redirect()->route('profile.edit')->with('success', 'Profil mis à jour avec succès.');
+        return redirect()->route('home')->with('success', 'Profil mis à jour avec succès.');
     }
 
     /**

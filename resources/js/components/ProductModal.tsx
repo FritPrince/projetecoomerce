@@ -41,7 +41,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
                         {/* Image du produit */}
                         <div className="w-full md:w-1/2 bg-gray-100 flex items-center justify-center p-8">
                             <motion.img 
-                                src={produit.image || 'https://via.placeholder.com/400x500?text=Produit'}
+                                src={produit.image_url || 'https://via.placeholder.com/400x500?text=Produit'}
                                 alt={produit.nom}
                                 className="max-h-[400px] object-contain"
                                 initial={{ opacity: 0 }}

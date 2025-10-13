@@ -76,6 +76,7 @@ export interface Produit {
     description: string;
     prix: number;
     image?: string;
+    image_url?: string; // Accessor for image URL
     stock: number;
     quantite_stock: number; // Alias pour compatibilité
     sous_categorie_id: number;

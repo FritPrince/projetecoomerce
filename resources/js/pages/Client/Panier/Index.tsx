@@ -1,6 +1,6 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
-import { ShoppingCart, Trash2, Plus, Minus, ArrowLeft } from 'lucide-react';
+import { ShoppingCart, Trash2, Plus, Minus, ArrowLeft, Package } from 'lucide-react';
 
 interface ProduitPanier {
     id: number;
@@ -151,16 +151,16 @@ export default function Panier({ panier, flash }: PanierProps) {
                                         <div className="flex items-center space-x-4">
                                             {/* Image */}
                                             <div className="flex-shrink-0 w-20 h-20 bg-gray-200 rounded-lg overflow-hidden">
-                                                {produit.image ? (
-                                                    <img 
-                                                        src={`/storage/${produit.image}`}
-                                                        alt={produit.nom}
-                                                        className="w-full h-full object-cover"
-                                                    />
+                                                {produit.image_url ? (
+                                                        <img
+                                                            src={produit.image_url}
+                                                            alt={produit.nom}
+                                                            className="w-16 h-16 object-cover rounded"
+                                                        />
                                                 ) : (
-                                                    <div className="w-full h-full flex items-center justify-center">
-                                                        <span className="text-gray-400 text-xs">Image</span>
-                                                    </div>
+                                                        <div className="w-16 h-16 bg-muted flex items-center justify-center rounded">
+                                                            <Package className="h-8 w-8 text-muted-foreground" />
+                                                        </div>
                                                 )}
                                             </div>
 

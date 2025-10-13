@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { SharedData } from '@/types';
 import SearchBar from '@/components/SearchBar';
+import { route } from '@/lib/route';
 
 interface ClientLayoutProps {
     children: React.ReactNode;
@@ -59,7 +60,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
                                 </Link>
                             </Button>
                             <Button variant="ghost" size="icon" asChild>
-                                <Link href={auth.user ? '/profil' : '/login'}>
+                                <Link href={auth.user ? route('profil.index') : route('login')}>
                                     <User className="h-5 w-5" />
                                 </Link>
                             </Button>

@@ -181,9 +181,8 @@ export default function CommandeShow({ commande }: CommandeShowProps) {
                                         {commande.ligne_commandes.map((ligne) => (
                                             <div key={ligne.id} className="flex items-center space-x-4 p-4 border rounded-lg">
                                                 <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
-                                                    {ligne.produit.image ? (
-                                                        <img 
-                                                            src={`/storage/${ligne.produit.image}`}
+                                                    {ligne.produit.image_url ? (
+                                                            src={ligne.produit.image_url}
                                                             alt={ligne.produit.nom}
                                                             className="w-full h-full object-cover rounded-lg"
                                                         />

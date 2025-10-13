@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Star, TrendingUp, Heart, ShoppingCart } from 'lucide-react';
+import { Star, TrendingUp, Heart, ShoppingCart, Package } from 'lucide-react';
 import { Link } from '@inertiajs/react';
 import { Produit } from '@/types';
 
@@ -146,15 +146,15 @@ export default function Recommendations({
                     <Card key={produit.id} className="group hover:shadow-lg transition-shadow">
                         <CardContent className="p-4">
                             <div className="aspect-square bg-gray-100 rounded-lg mb-4 overflow-hidden">
-                                {produit.image ? (
+                                {produit.image_url ? (
                                     <img
-                                        src={`/storage/${produit.image}`}
+                                        src={produit.image_url}
                                         alt={produit.nom}
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                        className="w-full h-48 object-cover rounded-t-lg"
                                     />
                                 ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-gray-400">
-                                        <ShoppingCart className="h-12 w-12" />
+                                    <div className="w-full h-48 bg-muted flex items-center justify-center rounded-t-lg">
+                                        <Package className="h-16 w-16 text-muted-foreground" />
                                     </div>
                                 )}
                             </div>
