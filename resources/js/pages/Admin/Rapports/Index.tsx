@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { FileText, Download, Calendar, Filter, BarChart3, TrendingUp } from 'lucide-react';
+import React, { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -19,67 +20,13 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 interface RapportsProps {
     reports: any[];
+    report_types: any;
 }
 
-export default function RapportsIndex({ reports }: RapportsProps) {
-    const reportTypes = [
-        {
-            id: 'ventes',
-            title: 'Rapport des Ventes',
-            description: 'Analyse détaillée des ventes par période',
-            icon: BarChart3,
-            color: 'text-green-600',
-            bgColor: 'bg-green-50',
-        },
-        {
-            id: 'clients',
-            title: 'Rapport Clients',
-            description: 'Comportement et données des clients',
-            icon: TrendingUp,
-            color: 'text-blue-600',
-            bgColor: 'bg-blue-50',
-        },
-        {
-            id: 'produits',
-            title: 'Rapport Produits',
-            description: 'Performance des produits en stock',
-            icon: FileText,
-            color: 'text-purple-600',
-            bgColor: 'bg-purple-50',
-        },
-        {
-            id: 'financier',
-            title: 'Rapport Financier',
-            description: 'Analyse des revenus et coûts',
-            icon: FileText,
-            color: 'text-orange-600',
-            bgColor: 'bg-orange-50',
-        },
-    ];
-
-    const recentReports = [
-        {
-            id: 1,
-            name: 'Rapport Ventes - Janvier 2024',
-            type: 'Ventes',
-            generated: '2024-01-31',
-            status: 'completed',
-        },
-        {
-            id: 2,
-            name: 'Analyse Clients - Q4 2023',
-            type: 'Clients',
-            generated: '2023-12-31',
-            status: 'completed',
-        },
-        {
-            id: 3,
-            name: 'Performance Produits - Décembre',
-            type: 'Produits',
-            generated: '2023-12-15',
-            status: 'completed',
-        },
-    ];
+export default function RapportsIndex({ reports, report_types }: RapportsProps) {
+    const [type, setType] = useState('ventes');
+    const [period, setPeriod] = useState('month');
+    const [format, setFormat] = useState('csv');
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -92,26 +39,16 @@ export default function RapportsIndex({ reports }: RapportsProps) {
                             Générez et consultez vos rapports d'analyse
                         </p>
                     </div>
-                    <div className="flex gap-2">
-                        <Button variant="outline">
-                            <Filter className="h-4 w-4 mr-2" />
-                            Filtrer
-                        </Button>
-                        <Button>
-                            <FileText className="h-4 w-4 mr-2" />
-                            Nouveau Rapport
-                        </Button>
-                    </div>
                 </div>
 
                 {/* Types de rapports */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {reportTypes.map((report) => (
-                        <Card key={report.id} className="cursor-pointer hover:shadow-md transition-shadow">
+                    {Object.entries(report_types).map(([key, report]) => (
+                        <Card key={key} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setType(key)}>
                             <CardHeader>
                                 <div className="flex items-center space-x-3">
                                     <div className={`p-2 rounded-full ${report.bgColor}`}>
-                                        <report.icon className={`h-5 w-5 ${report.color}`} />
+                                        {/* Icon mapping might be needed here */}
                                     </div>
                                     <div>
                                         <CardTitle className="text-lg">{report.title}</CardTitle>
@@ -121,110 +58,55 @@ export default function RapportsIndex({ reports }: RapportsProps) {
                                     </div>
                                 </div>
                             </CardHeader>
-                            <CardContent>
-                                <Button variant="outline" className="w-full">
-                                    <Calendar className="h-4 w-4 mr-2" />
-                                    Générer
-                                </Button>
-                            </CardContent>
                         </Card>
                     ))}
                 </div>
 
-                {/* Rapports récents */}
+                {/* Paramètres de génération */}
                 <Card>
                     <CardHeader>
-                        <CardTitle>Rapports Récents</CardTitle>
+                        <CardTitle>Génération de Rapport</CardTitle>
                         <CardDescription>
-                            Derniers rapports générés et en cours
+                            Créez un rapport avec les paramètres ci-dessous.
                         </CardDescription>
                     </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
-                            {recentReports.map((report) => (
-                                <div key={report.id} className="flex items-center justify-between p-4 border rounded-lg">
-                                    <div className="flex items-center space-x-4">
-                                        <div className="flex items-center justify-center w-10 h-10 bg-primary/10 rounded-full">
-                                            <FileText className="h-5 w-5 text-primary" />
-                                        </div>
-                                        <div>
-                                            <h3 className="font-medium">{report.name}</h3>
-                                            <p className="text-sm text-muted-foreground">
-                                                Type: {report.type} • Généré le {new Date(report.generated).toLocaleDateString('fr-FR')}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center space-x-2">
-                                        <Badge variant={report.status === 'completed' ? 'default' : 'secondary'}>
-                                            {report.status === 'completed' ? 'Terminé' : 'En cours'}
-                                        </Badge>
-                                        <Button variant="outline" size="sm">
-                                            <Download className="h-4 w-4 mr-2" />
-                                            Télécharger
-                                        </Button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Paramètres de génération */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Génération Rapide</CardTitle>
-                            <CardDescription>
-                                Créez un rapport avec des paramètres prédéfinis
-                            </CardDescription>
-                        </CardHeader>
+                    <form action="/admin/rapports/generate" method="POST">
                         <CardContent className="space-y-4">
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium">Période</label>
-                                <select className="w-full p-2 border rounded-md">
-                                    <option>Dernier mois</option>
-                                    <option>Derniers 3 mois</option>
-                                    <option>Dernière année</option>
-                                    <option>Personnalisé</option>
-                                </select>
+                            <input type="hidden" name="_token" value={(document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content} />
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium">Type de rapport</label>
+                                    <select name="type" value={type} onChange={e => setType(e.target.value)} className="w-full p-2 border rounded-md">
+                                        {Object.entries(report_types).map(([key, report]) => (
+                                            <option key={key} value={key}>{report.title}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium">Période</label>
+                                    <select name="period" value={period} onChange={e => setPeriod(e.target.value)} className="w-full p-2 border rounded-md">
+                                        <option value="month">Dernier mois</option>
+                                        <option value="quarter">Derniers 3 mois</option>
+                                        <option value="year">Dernière année</option>
+                                        <option value="custom">Personnalisé</option>
+                                    </select>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium">Format</label>
+                                    <select name="format" value={format} onChange={e => setFormat(e.target.value)} className="w-full p-2 border rounded-md">
+                                        <option value="csv">CSV</option>
+                                        <option value="pdf">PDF (bientôt)</option>
+                                        <option value="excel">Excel (bientôt)</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-medium">Format</label>
-                                <select className="w-full p-2 border rounded-md">
-                                    <option>PDF</option>
-                                    <option>Excel</option>
-                                    <option>CSV</option>
-                                </select>
-                            </div>
-                            <Button className="w-full">
-                                <FileText className="h-4 w-4 mr-2" />
-                                Générer le Rapport
+                            <Button type="submit" className="w-full">
+                                <Download className="h-4 w-4 mr-2" />
+                                Générer et Télécharger
                             </Button>
                         </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Planification</CardTitle>
-                            <CardDescription>
-                                Programmez des rapports automatiques
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="text-center py-8">
-                                <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                                <h3 className="font-medium mb-2">Planification à venir</h3>
-                                <p className="text-sm text-muted-foreground mb-4">
-                                    Programmez des rapports récurrents
-                                </p>
-                                <Button variant="outline">
-                                    <Calendar className="h-4 w-4 mr-2" />
-                                    Configurer
-                                </Button>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
+                    </form>
+                </Card>
             </div>
         </AppLayout>
     );

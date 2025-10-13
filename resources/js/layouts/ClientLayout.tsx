@@ -1,11 +1,12 @@
 import { Link, usePage } from '@inertiajs/react';
-import { Heart, Search, ShoppingCart, User, Package } from 'lucide-react';
+import { GitCompare, Heart, Package, Search, ShoppingCart, Ticket, User } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { SharedData } from '@/types';
 import SearchBar from '@/components/SearchBar';
 import { route } from '@/lib/route';
+import OnboardingModal from '@/components/OnboardingModal';
 
 interface ClientLayoutProps {
     children: React.ReactNode;
@@ -14,17 +15,25 @@ interface ClientLayoutProps {
 export default function ClientLayout({ children }: ClientLayoutProps) {
     const [isScrolled, setIsScrolled] = useState(false);
     const { auth } = usePage<SharedData>().props;
+    const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
 
     useEffect(() => {
         const handleScroll = () => {
             setIsScrolled(window.scrollY > 10);
         };
         window.addEventListener('scroll', handleScroll);
+
+        // Check if onboarding should be shown
+        if (auth.user && !auth.user.has_seen_onboarding) {
+            setIsOnboardingOpen(true);
+        }
+
         return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+    }, [auth.user]);
 
     return (
         <div className="min-h-screen bg-gray-50 font-sans text-gray-900 antialiased">
+            <OnboardingModal isOpen={isOnboardingOpen} onClose={() => setIsOnboardingOpen(false)} />
             <header 
                 className={`sticky top-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white/95 shadow-md backdrop-blur-sm' : 'bg-transparent'}`}>
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -48,6 +57,18 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
                                 </Link>
                             </Button>
                             
+                            <Button variant="ghost" size="icon" asChild>
+                                <Link href={route('compare.index')}>
+                                    <GitCompare className="h-5 w-5" />
+                                </Link>
+                            </Button>
+
+                            <Button variant="ghost" size="icon" asChild>
+                                <Link href={route('client.coupons.index')}>
+                                    <Ticket className="h-5 w-5" />
+                                </Link>
+                            </Button>
+
                             <Button variant="ghost" size="icon" asChild>
                                 <Link href="/mes-commandes">
                                     <Package className="h-5 w-5" />

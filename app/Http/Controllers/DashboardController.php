@@ -9,7 +9,8 @@ use App\Models\User;
 use App\Models\Paiement;
 use App\Models\Favori;
 use Illuminate\Support\Facades\Auth;
-
+use App\Models\Categorie;
+use Illuminate\Support\Facades\DB;
 class DashboardController extends Controller
 {
     public function index()
@@ -47,6 +48,17 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
         $userId = $user->id;
+
+        $categories = Categorie::with(['sousCategories' => function($query) {
+        $query->withCount('produits');
+    }])->get();
+
+    $produits = Produit::with(['sousCategorie.categorie'])
+        ->select('produits.*')
+        ->addSelect(DB::raw('produits.image as image_url'))
+        ->where('stock', '>', 0)
+        ->orderBy('created_at', 'desc')
+        ->get();
         
         $commandes = Commande::where('user_id', $userId)
                             ->with('produits')
@@ -59,8 +71,10 @@ class DashboardController extends Controller
                          ->get();
 
         return Inertia::render('Client/Accueil', [
-        'commandes' => $commandes,
-        'favoris' => $favoris
-    ]);
+    'categories' => $categories,
+    'produits' => $produits,
+    'commandes' => $commandes,
+    'favoris' => $favoris
+]);
     }
 }

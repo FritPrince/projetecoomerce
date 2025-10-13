@@ -27,7 +27,9 @@ import {
     Bell,
     Settings,
     BarChart3,
-    FileText
+    FileText,
+    Ticket,
+    GitCompare
 } from 'lucide-react';
 import AppLogo from './app-logo';
 
@@ -61,6 +63,11 @@ const adminNavItems: NavItem[] = [
         title: 'Produits',
         href: '/produits',
         icon: Package,
+    },
+    {
+        title: 'Coupons',
+        href: '/coupons',
+        icon: Ticket,
     },
     {
         title: 'Commandes',

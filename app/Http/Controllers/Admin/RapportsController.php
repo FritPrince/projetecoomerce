@@ -97,54 +97,85 @@ class RapportsController extends Controller
             'end_date' => 'nullable|date|after:start_date',
         ]);
 
-        // Simulation de génération de rapport
-        $reportData = $this->generateReportData($request->type, $request->period, $request->all());
+        list($data, $headers) = $this->generateReportData($request->type, $request->period, $request->all());
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Rapport généré avec succès',
-            'report' => [
-                'id' => rand(1000, 9999),
-                'name' => "Rapport {$request->type} - " . now()->format('Y-m-d'),
-                'type' => ucfirst($request->type),
-                'format' => strtoupper($request->format),
-                'generated' => now()->toDateString(),
-                'status' => 'completed',
-                'data' => $reportData
-            ]
-        ]);
+        if ($request->format === 'csv') {
+            $fileName = 'rapport_' . $request->type . '_' . now()->format('Y-m-d') . '.csv';
+
+            $callback = function() use ($data, $headers) {
+                $file = fopen('php://output', 'w');
+                fputcsv($file, $headers);
+
+                foreach ($data as $row) {
+                    fputcsv($file, $row);
+                }
+
+                fclose($file);
+            };
+
+            return response()->stream($callback, 200, [
+                'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+                'Content-Type' => 'text/csv',
+            ]);
+        }
+
+        // Pour PDF et Excel, à implémenter
+        return back()->with('error', "Le format {$request->format} n'est pas encore supporté.");
     }
 
     private function generateReportData($type, $period, $params)
     {
-        // Simulation de données selon le type de rapport
+        $query = $this->getBaseQuery($type, $period, $params);
+        $results = $query->get();
+
+        if ($results->isEmpty()) {
+            return [[], []];
+        }
+
+        $headers = array_keys($results->first()->toArray());
+        $data = $results->map(function ($row) {
+            return $row->toArray();
+        })->all();
+
+        return [$data, $headers];
+    }
+
+    private function getBaseQuery($type, $period, $params)
+    {
+        $startDate = $params['start_date'] ?? null;
+        $endDate = $params['end_date'] ?? null;
+
+        // Logique de période (simplifiée)
+        if ($period !== 'custom') {
+            $endDate = now();
+            if ($period === 'month') {
+                $startDate = now()->subMonth();
+            } elseif ($period === 'quarter') {
+                $startDate = now()->subQuarter();
+            } elseif ($period === 'year') {
+                $startDate = now()->subYear();
+            }
+        }
+
         switch ($type) {
             case 'ventes':
-                return [
-                    'total_ventes' => rand(100, 1000),
-                    'montant_total' => rand(10000, 100000),
-                    'tendance' => rand(-10, 20),
-                ];
+                return Commande::query()
+                    ->whereBetween('created_at', [$startDate, $endDate])
+                    ->select('id', 'user_id', 'total', 'statut', 'created_at');
             case 'clients':
-                return [
-                    'total_clients' => rand(50, 500),
-                    'nouveaux_clients' => rand(10, 50),
-                    'clients_actifs' => rand(30, 200),
-                ];
+                return User::query()
+                    ->where('role', 'client')
+                    ->whereBetween('created_at', [$startDate, $endDate])
+                    ->select('id', 'name', 'email', 'created_at');
             case 'produits':
-                return [
-                    'total_produits' => rand(100, 1000),
-                    'produits_en_stock' => rand(80, 800),
-                    'produits_rupture' => rand(5, 50),
-                ];
+                return Produit::query()
+                    ->select('id', 'nom', 'prix', 'stock', 'sous_categorie_id');
             case 'financier':
-                return [
-                    'revenus_totaux' => rand(50000, 500000),
-                    'depenses' => rand(20000, 200000),
-                    'benefices' => rand(10000, 100000),
-                ];
+                return Paiement::query()
+                    ->whereBetween('created_at', [$startDate, $endDate])
+                    ->select('id', 'commande_id', 'montant', 'methode_paiement', 'statut_paiement', 'created_at');
             default:
-                return [];
+                return collect([]);
         }
     }
 }

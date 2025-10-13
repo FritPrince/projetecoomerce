@@ -18,6 +18,7 @@ class User extends Authenticatable
         'role',
         'telephone',
         'adresse',
+        'has_seen_onboarding',
     ];
 
     protected $hidden = [

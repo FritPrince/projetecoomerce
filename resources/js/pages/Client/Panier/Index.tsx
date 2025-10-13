@@ -6,7 +6,7 @@ interface ProduitPanier {
     id: number;
     nom: string;
     prix: number;
-    image?: string;
+    image_url?: string;
     stock: number;
     pivot: {
         quantite: number;

@@ -6,6 +6,7 @@ use App\Models\Coupon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Inertia\Inertia; // Ajout de l'import pour Inertia
 
 class CouponController extends Controller
 {
@@ -87,6 +88,10 @@ class CouponController extends Controller
         ]);
     }
 
+    public function create()
+{
+    return Inertia::render('Admin/Coupons/Create');
+}
     /**
      * Calculer la réduction
      */
@@ -113,7 +118,19 @@ class CouponController extends Controller
     {
         $coupons = Coupon::orderBy('created_at', 'desc')->paginate(20);
 
-        return view('admin.coupons.index', compact('coupons'));
+        return Inertia::render('Admin/Coupons/Index', [
+            'coupons' => $coupons,
+        ]);
+    }
+
+    /**
+     * Afficher le formulaire de modification d'un coupon.
+     */
+    public function edit(Coupon $coupon)
+    {
+        return Inertia::render('Admin/Coupons/Edit', [
+            'coupon' => $coupon
+        ]);
     }
 
     /**
@@ -122,20 +139,20 @@ class CouponController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'name' => 'required|string|max:255',
             'code' => 'required|string|max:50|unique:coupons',
-            'type' => 'required|in:fixe,pourcentage',
-            'valeur' => 'required|numeric|min:0',
-            'montant_minimum' => 'required|numeric|min:0',
-            'montant_maximum' => 'nullable|numeric|min:0',
-            'date_debut' => 'required|date',
-            'date_fin' => 'required|date|after:date_debut',
-            'description' => 'nullable|string|max:255',
-            'actif' => 'boolean'
+            'type' => 'required|in:fixed,percentage',
+            'value' => 'required|numeric|min:0',
+            'minimum_amount' => 'nullable|numeric|min:0',
+            'starts_at' => 'nullable|date',
+            'expires_at' => 'nullable|date|after:starts_at',
+            'description' => 'nullable|string',
+            'is_active' => 'boolean'
         ]);
 
         Coupon::create($request->all());
 
-        return redirect()->back()->with('success', 'Coupon créé avec succès');
+        return redirect()->route('coupons.index')->with('success', 'Coupon créé avec succès');
     }
 
     /**
@@ -144,20 +161,20 @@ class CouponController extends Controller
     public function update(Request $request, Coupon $coupon)
     {
         $request->validate([
+            'name' => 'required|string|max:255',
             'code' => 'required|string|max:50|unique:coupons,code,' . $coupon->id,
-            'type' => 'required|in:fixe,pourcentage',
-            'valeur' => 'required|numeric|min:0',
-            'montant_minimum' => 'required|numeric|min:0',
-            'montant_maximum' => 'nullable|numeric|min:0',
-            'date_debut' => 'required|date',
-            'date_fin' => 'required|date|after:date_debut',
-            'description' => 'nullable|string|max:255',
-            'actif' => 'boolean'
+            'type' => 'required|in:fixed,percentage',
+            'value' => 'required|numeric|min:0',
+            'minimum_amount' => 'nullable|numeric|min:0',
+            'starts_at' => 'nullable|date',
+            'expires_at' => 'nullable|date|after:starts_at',
+            'description' => 'nullable|string',
+            'is_active' => 'boolean'
         ]);
 
         $coupon->update($request->all());
 
-        return redirect()->back()->with('success', 'Coupon mis à jour avec succès');
+        return redirect()->route('coupons.index')->with('success', 'Coupon mis à jour avec succès');
     }
 
     /**

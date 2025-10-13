@@ -95,9 +95,9 @@ const ProductModal: React.FC<ProductModalProps> = ({
                                 transition={{ delay: 0.4 }}
                             >
                                 <h3 className="font-semibold mb-2">Disponibilité</h3>
-                                <p className={`${produit.quantite_stock > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                    {produit.quantite_stock > 0 
-                                        ? `En stock (${produit.quantite_stock} disponibles)` 
+                                <p className={`${produit.stock > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                    {produit.stock > 0 
+                                        ? `En stock (${produit.stock} disponibles)` 
                                         : 'Rupture de stock'}
                                 </p>
                             </motion.div>
@@ -111,7 +111,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.5 }}
                                     onClick={() => onAddToCart(produit.id)}
-                                    disabled={produit.quantite_stock <= 0}
+                                    disabled={produit.stock <= 0}
                                 >
                                     <ShoppingCart size={18} />
                                     Ajouter au panier

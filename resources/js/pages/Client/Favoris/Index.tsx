@@ -8,9 +8,9 @@ interface ProduitFavori {
     nom: string;
     description: string;
     prix: number;
-    image?: string;
+    image_url?: string;
     stock: number;
-    note_moyenne?: number; // Rendre optionnel
+    note_moyenne?: number;
 }
 
 interface Favori {
@@ -27,7 +27,6 @@ interface FavorisProps {
 }
 
 export default function Favoris({ favoris, flash }: FavorisProps) {
-    // S'assurer que favorisList est toujours un tableau
     const favorisList = Array.isArray(favoris) ? favoris : [];
 
     useEffect(() => {
@@ -65,12 +64,10 @@ export default function Favoris({ favoris, flash }: FavorisProps) {
         });
     };
 
-    // Fonction pour obtenir la note moyenne en sécurité
     const getNoteMoyenne = (note: number | undefined): number => {
-        return note || 0; // Retourne 0 si undefined
+        return note || 0;
     };
 
-    // Fonction pour formater la note
     const formatNote = (note: number | undefined): string => {
         return getNoteMoyenne(note).toFixed(1);
     };
@@ -79,69 +76,107 @@ export default function Favoris({ favoris, flash }: FavorisProps) {
         <>
             <Head title="Mes Favoris" />
             
-            <div className="min-h-screen bg-gray-50 py-8">
+            <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-8">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    {/* Header */}
-                    <div className="flex items-center justify-between mb-8">
-                        <Link href="/" className="flex items-center text-gray-600 hover:text-primary">
-                            <ArrowLeft className="h-5 w-5 mr-2" />
-                            Retour à l'accueil
-                        </Link>
-                        <h1 className="text-2xl font-bold text-gray-900">Mes Favoris</h1>
-                        <div className="text-sm text-gray-500">
-                            {favorisList.length} produit(s)
+                    {/* Header amélioré */}
+                    <div className="flex flex-col sm:flex-row items-center justify-between mb-8 p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
+                        <div className="flex items-center mb-4 sm:mb-0">
+                            <Link 
+                                href="/" 
+                                className="flex items-center text-gray-600 hover:text-primary transition-colors duration-200 bg-gray-50 hover:bg-gray-100 px-4 py-2 rounded-lg"
+                            >
+                                <ArrowLeft className="h-4 w-4 mr-2" />
+                                Retour à l'accueil
+                            </Link>
+                        </div>
+                        
+                        <div className="text-center">
+                            <h1 className="text-3xl font-bold text-gray-900 bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                                Mes Favoris
+                            </h1>
+                            <div className="flex items-center justify-center mt-2">
+                                <Heart className="h-5 w-5 text-pink-500 mr-2" />
+                                <span className="text-sm text-gray-500 font-medium">
+                                    {favorisList.length} produit(s) aimé(s)
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className="mt-4 sm:mt-0">
+                            <div className="bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-semibold">
+                                💖 Collection personnelle
+                            </div>
                         </div>
                     </div>
 
                     {favorisList.length === 0 ? (
-                        <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-                            <Heart className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                            <h2 className="text-2xl font-bold text-gray-900 mb-4">Aucun favori</h2>
-                            <p className="text-gray-500 mb-6">
-                                Ajoutez des produits à vos favoris pour les retrouver facilement.
+                        <div className="bg-white rounded-2xl shadow-sm p-12 text-center border border-gray-100">
+                            <div className="w-24 h-24 bg-gradient-to-br from-pink-100 to-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <Heart className="h-12 w-12 text-pink-400" />
+                            </div>
+                            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                                Aucun favori pour le moment
+                            </h2>
+                            <p className="text-gray-500 mb-8 max-w-md mx-auto text-lg">
+                                Commencez à collectionner vos produits préférés pour les retrouver facilement plus tard.
                             </p>
                             <Link 
                                 href="/"
-                                className="bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 font-semibold"
+                                className="inline-flex items-center bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl"
                             >
-                                Découvrir les produits
+                                Explorer la boutique
+                                <ArrowLeft className="h-5 w-5 ml-2 rotate-180" />
                             </Link>
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                            {Array.isArray(favorisList) && favorisList.map((favori) => {
+                            {favorisList.map((favori) => {
                                 const noteMoyenne = getNoteMoyenne(favori.produit.note_moyenne);
                                 const noteFormatee = formatNote(favori.produit.note_moyenne);
+                                const enStock = (favori.produit.stock || 0) > 0;
                                 
                                 return (
-                                    <div key={favori.id} className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                                    <div 
+                                        key={favori.id} 
+                                        className="group bg-white rounded-2xl shadow-sm hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-primary/20"
+                                    >
+                                        {/* Badge favori */}
+                                        <div className="absolute top-3 right-3 z-10">
+                                            <div className="bg-pink-500 text-white px-2 py-1 rounded-full text-xs font-semibold flex items-center">
+                                                <Heart className="h-3 w-3 mr-1 fill-current" />
+                                                Favori
+                                            </div>
+                                        </div>
+
                                         <Link href={`/produits/${favori.produit.id}`}>
-                                            <div className="aspect-square overflow-hidden rounded-t-lg">
+                                            <div className="aspect-square overflow-hidden relative">
                                                 {favori.produit.image_url ? (
-                                                        <img
-                                                            src={favori.produit.image_url}
-                                                            alt={favori.produit.nom}
-                                                            className="w-16 h-16 object-cover rounded"
-                                                        />
+                                                    <img
+                                                        src={favori.produit.image_url}
+                                                        alt={favori.produit.nom}
+                                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                                    />
                                                 ) : (
-                                                        <div className="w-16 h-16 bg-muted flex items-center justify-center rounded">
-                                                            <Package className="h-8 w-8 text-muted-foreground" />
-                                                        </div>
+                                                    <div className="w-full h-full bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+                                                        <Package className="h-16 w-16 text-gray-300" />
+                                                    </div>
                                                 )}
+                                                {/* Overlay au survol */}
+                                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300" />
                                             </div>
                                         </Link>
                                         
-                                        <div className="p-4">
+                                        <div className="p-5">
                                             <Link href={`/produits/${favori.produit.id}`}>
-                                                <h3 className="font-semibold text-gray-900 hover:text-primary mb-2 line-clamp-2">
+                                                <h3 className="font-semibold text-gray-900 hover:text-primary mb-2 line-clamp-2 text-lg leading-tight group-hover:text-primary transition-colors duration-200">
                                                     {favori.produit.nom}
                                                 </h3>
                                             </Link>
                                             
-                                            {/* Évaluation - Afficher seulement si une note existe */}
+                                            {/* Évaluation */}
                                             {noteMoyenne > 0 && (
-                                                <div className="flex items-center mb-2">
-                                                    <div className="flex text-yellow-400">
+                                                <div className="flex items-center mb-3">
+                                                    <div className="flex text-amber-400">
                                                         {[...Array(5)].map((_, i) => (
                                                             <Star 
                                                                 key={i}
@@ -149,47 +184,78 @@ export default function Favoris({ favoris, flash }: FavorisProps) {
                                                                     i < Math.floor(noteMoyenne) 
                                                                     ? 'fill-current' 
                                                                     : 'fill-none'
-                                                                }`}
+                                                                } ${i < noteMoyenne ? 'text-amber-400' : 'text-gray-300'}`}
                                                             />
                                                         ))}
                                                     </div>
-                                                    <span className="text-sm text-gray-500 ml-1">
-                                                        ({noteFormatee})
+                                                    <span className="text-sm text-gray-500 ml-2 font-medium">
+                                                        {noteFormatee}
                                                     </span>
                                                 </div>
                                             )}
                                             
-                                            <div className="flex items-center justify-between mb-3">
-                                                <span className="text-2xl font-bold text-primary">
+                                            <div className="flex items-center justify-between mb-4">
+                                                <span className="text-2xl font-bold text-transparent bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text">
                                                     {favori.produit.prix} €
                                                 </span>
-                                                <span className={`text-sm ${
-                                                    (favori.produit.stock || 0) > 0 ? 'text-green-600' : 'text-red-600'
+                                                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                                                    enStock 
+                                                    ? 'bg-green-100 text-green-700' 
+                                                    : 'bg-red-100 text-red-700'
                                                 }`}>
-                                                    {(favori.produit.stock || 0) > 0 ? 'En stock' : 'Rupture'}
+                                                    {enStock ? '✓ En stock' : 'Rupture'}
                                                 </span>
                                             </div>
                                             
-                                            <div className="flex space-x-2">
+                                            <div className="flex space-x-3">
                                                 <button
                                                     onClick={() => ajouterAuPanier(favori.produit.id)}
-                                                    disabled={(favori.produit.stock || 0) === 0}
-                                                    className="flex-1 bg-primary text-white py-2 px-4 rounded-lg hover:bg-primary/90 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                                                    disabled={!enStock}
+                                                    className="flex-1 bg-gradient-to-r from-primary to-blue-600 text-white py-3 px-4 rounded-xl hover:from-primary/90 hover:to-blue-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all duration-200 font-semibold shadow-md hover:shadow-lg flex items-center justify-center"
                                                 >
-                                                    <ShoppingCart className="h-4 w-4 inline mr-1" />
-                                                    Panier
+                                                    <ShoppingCart className="h-4 w-4 mr-2" />
+                                                    Ajouter
                                                 </button>
                                                 <button
                                                     onClick={() => supprimerDesFavoris(favori.id)}
-                                                    className="p-2 border border-gray-300 rounded-lg hover:border-red-500 hover:text-red-500 transition-colors"
+                                                    className="p-3 border border-gray-200 rounded-xl hover:border-red-300 hover:bg-red-50 hover:text-red-500 transition-all duration-200 group/delete"
+                                                    title="Retirer des favoris"
                                                 >
-                                                    <Trash2 className="h-4 w-4" />
+                                                    <Trash2 className="h-4 w-4 group-hover/delete:scale-110 transition-transform" />
                                                 </button>
                                             </div>
                                         </div>
                                     </div>
                                 );
                             })}
+                        </div>
+                    )}
+
+                    {/* Section d'appel à l'action si des favoris existent */}
+                    {favorisList.length > 0 && (
+                        <div className="mt-12 text-center">
+                            <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm">
+                                <h3 className="text-xl font-bold text-gray-900 mb-4">
+                                    Vous avez trouvé vos favoris ?
+                                </h3>
+                                <p className="text-gray-500 mb-6">
+                                    Passez à l'action et complétez votre collection
+                                </p>
+                                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                                    <Link 
+                                        href="/"
+                                        className="bg-primary text-white px-8 py-3 rounded-xl hover:bg-primary/90 transition-colors duration-200 font-semibold"
+                                    >
+                                        Continuer mes achats
+                                    </Link>
+                                    <Link 
+                                        href="/panier"
+                                        className="border border-primary text-primary px-8 py-3 rounded-xl hover:bg-primary hover:text-white transition-all duration-200 font-semibold"
+                                    >
+                                        Voir mon panier
+                                    </Link>
+                                </div>
+                            </div>
                         </div>
                     )}
                 </div>

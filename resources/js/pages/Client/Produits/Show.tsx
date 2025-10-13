@@ -8,7 +8,7 @@ interface Produit {
     nom: string;
     description: string;
     prix: number;
-    image?: string;
+    image_url?: string;
     stock: number;
     note_moyenne: number;
     nombre_avis: number;

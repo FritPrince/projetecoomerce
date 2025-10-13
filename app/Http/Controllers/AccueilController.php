@@ -8,6 +8,7 @@ use App\Models\Produit;
 use App\Models\Favori;
 use App\Models\Commande;
 use App\Models\LigneCommande;
+use App\Models\Coupon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
@@ -197,6 +198,8 @@ class AccueilController extends Controller
         ->where('user_id', $user->id)
         ->get();
 
+        dump($favoris->toArray()); // Debug statement
+
         return Inertia::render('Client/Favoris/Index', [
             'favoris' => $favoris
         ]);
@@ -356,6 +359,18 @@ class AccueilController extends Controller
             'categories' => $categories,
             'produits' => $produits,
             'categorie_active' => $categorie->id
+        ]);
+    }
+
+    /**
+     * Afficher les coupons disponibles pour le client.
+     */
+    public function coupons()
+    {
+        $coupons = Coupon::orderBy('created_at', 'desc')->get();
+
+        return Inertia::render('Client/Coupons/Index', [
+            'coupons' => $coupons
         ]);
     }
 }

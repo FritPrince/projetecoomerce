@@ -9,7 +9,7 @@ interface Produit {
     id: number;
     nom: string;
     prix: number;
-    image?: string;
+    image_url?: string;
     sous_categorie: {
         nom: string;
         categorie: {
@@ -182,6 +182,7 @@ export default function CommandeShow({ commande }: CommandeShowProps) {
                                             <div key={ligne.id} className="flex items-center space-x-4 p-4 border rounded-lg">
                                                 <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
                                                     {ligne.produit.image_url ? (
+                                                        <img
                                                             src={ligne.produit.image_url}
                                                             alt={ligne.produit.nom}
                                                             className="w-full h-full object-cover rounded-lg"

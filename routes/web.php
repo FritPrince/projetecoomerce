@@ -1,6 +1,17 @@
 <?php
 // routes/web.php
 use Illuminate\Support\Facades\Route;
+
+Route::post('/onboarding/complete', [App\Http\Controllers\OnboardingController::class, 'markAsComplete'])
+    ->middleware(['auth'])
+    ->name('onboarding.complete');
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|*/ 
+
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 
@@ -55,24 +66,12 @@ Route::get('/produit/{produit}', [AccueilController::class, 'showProduit'])->nam
 
 Route::put('/password', [PasswordController::class, 'update'])->name('password.update');
 Route::get('/password/edit', [PasswordController::class, 'edit'])->name('password.edit');
-// Routes de test
-Route::get('/test-role', function () {
-    /** @var \App\Models\User $user */
-    $user = Auth::user();
-    dump($user);
-    dump($user->role);
-    dump($user->isAdmin());
-    
-    return 'Check your console';
-});
-
 // ==================== ROUTES AUTHENTIFIÉES ====================
-// (Accessibles uniquement aux utilisateurs connectés)
 
 Route::middleware(['auth'])->group(function () {
     
     // Dashboard et profil (accessibles à tous les utilisateurs connectés)
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('role:admin');
     Route::get('/profile', [UserController::class, 'profile'])->name('profile.edit-user');
     Route::patch('/profile', [UserController::class, 'updateProfile'])->name('profile.update-user');
     
@@ -91,6 +90,7 @@ Route::middleware(['auth'])->group(function () {
     // ==================== ROUTES CLIENT ====================
     Route::middleware(['role:client'])->group(function () {
         // Profil client
+    Route::get('/dashboard-client', [DashboardController::class, 'index'])->name('dashboard-client')->middleware('role:client');
         Route::get('/client/profile', [App\Http\Controllers\Client\ProfileController::class, 'show'])->name('profile.show');
         Route::get('/client/profile/edit', [App\Http\Controllers\Client\ProfileController::class, 'edit'])->name('profile.edit');
         Route::match(['put', 'patch'], '/client/profile', [App\Http\Controllers\Client\ProfileController::class, 'update'])->name('profile.update');
@@ -129,6 +129,7 @@ Route::middleware(['auth'])->group(function () {
         
         // Commandes client (historique)
         Route::get('/commandes', [AccueilController::class, 'commandes'])->name('commandes.index');
+        Route::get('/mes-coupons', [AccueilController::class, 'coupons'])->name('client.coupons.index');
         
         // Paiements
         Route::get('/payment/methods/{commande}', [PaymentController::class, 'showPaymentMethods'])->name('payment.methods');
