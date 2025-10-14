@@ -101,8 +101,9 @@ export default function ProduitsShow({ produit }: ProduitsShowProps) {
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 <div className="flex items-start space-x-6">
-                                    {produit.image_url ? (
-                                            src={produit.image_url}
+                                    {produit.image ? ( // CORRECTION: utiliser produit.image au lieu de produit.image_url
+                                        <img
+                                            src={`/storage/${produit.image}`} // CORRECTION: ajouter le chemin storage
                                             alt={produit.nom}
                                             className="w-32 h-32 object-cover rounded-lg"
                                         />
@@ -116,7 +117,7 @@ export default function ProduitsShow({ produit }: ProduitsShowProps) {
                                         <div className="flex items-center space-x-4 mb-3">
                                             <div className="flex items-center space-x-2">
                                                 <Euro className="h-5 w-5 text-green-600" />
-                                                <span className="text-2xl font-bold">{produit.prix}</span>
+                                                <span className="text-2xl font-bold">{produit.prix} €</span> {/* CORRECTION: ajouter € */}
                                             </div>
                                             <Badge variant={produit.stock > 0 ? 'default' : 'destructive'}>
                                                 {produit.stock} en stock
