@@ -48,6 +48,10 @@ class RegisteredUserController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+         if($user->isAdmin() ?? false) {
+            return redirect()->intended(route('dashboard', absolute: false));
+        }
+
+        return redirect()->intended(route('dashboard-client', absolute: false));
     }
 }
