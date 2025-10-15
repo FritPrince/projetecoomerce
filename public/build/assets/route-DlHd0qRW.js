@@ -1,0 +1,1 @@
+function r(e,o){return typeof window<"u"&&window.route?window.route(e,o):(console.error("Ziggy routes not found. Please run `php artisan ziggy:generate` and add `@routes` to your blade layout."),"#")}export{r};
